@@ -3,28 +3,46 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Resume</title>
+  <title>Claire Lorts Resume</title>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
   <style>
     * { margin: 0; padding: 0; box-sizing: border-box; }
     body {
       background: #7a2222;
       display: flex;
-      justify-content: center;
+      flex-direction: column;
       align-items: center;
-      min-height: 100vh;
       padding: 2rem;
+      gap: 1.5rem;
     }
-    embed {
-      width: 100%;
+    canvas {
       max-width: 800px;
-      height: 90vh;
-      border: none;
+      width: 100%;
+      height: auto;
+      border: 1px solid rgba(255, 255, 255, 0.25);
       border-radius: 4px;
     }
   </style>
 </head>
 <body>
-  <!-- Replace "resume.pdf" with your actual PDF filename -->
-  <embed src="resume.pdf" type="application/pdf" />
+  <script>
+    const pdfUrl = "resume.pdf";
+
+    pdfjsLib.GlobalWorkerOptions.workerSrc =
+      "https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js";
+
+    pdfjsLib.getDocument(pdfUrl).promise.then(async (pdf) => {
+      for (let i = 1; i <= pdf.numPages; i++) {
+        const page = await pdf.getPage(i);
+        const scale = 2;
+        const viewport = page.getViewport({ scale });
+        const canvas = document.createElement("canvas");
+        canvas.width = viewport.width;
+        canvas.height = viewport.height;
+        document.body.appendChild(canvas);
+        await page.render({ canvasContext: canvas.getContext("2d"), viewport }).promise;
+      }
+    });
+  </script>
 </body>
 </html>
